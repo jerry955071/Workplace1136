@@ -2,7 +2,7 @@
 from WoodyNano import samtools
 import os
 import sys
-
+import pandas as pd
 
 def last_name(alignment):
     return alignment.qname.split('|')[-1]
@@ -28,6 +28,7 @@ class logger(object):
 path_woodynano = '/Users/zhujiachen/Desktop/remap/Ptr_bio1_full_length_woodynano.sam'
 path_pychopper = '/Users/zhujiachen/Desktop/remap/Ptr_bio1_full_length_pychopper.sam'
 path_logfile = '/Users/zhujiachen/Desktop/remap/Ptr_bio1_sam_compare.log'
+out_table = '/Users/zhujiachen/Desktop/remap/Stats/Ptr_bio1_stats.csv'
 
 logfile = logger(path=path_logfile)
 logfile.new()
@@ -44,8 +45,8 @@ sam_pychopper = samtools.SAM.Import(
 
 logfile.append(
     f'Numbers of primary alignments:\n\
-WoodyNano:{len(sam_woodynano.alignments)}\n\
-Pychopper:{len(sam_pychopper.alignments)}'
+WoodyNano:{len(sam_woodynano.alignment)}\n\
+Pychopper:{len(sam_pychopper.alignment)}'
 )
 
 dict_woodynano = {last_name(i):i for i in sam_woodynano.alignment}
@@ -67,8 +68,36 @@ for name in list(both_mapped):
     dict_pychopper[name].cal_all_stats(keep=True)
 
 for name in list(both_mapped):
-    align_woodynano = dict_woodynano[name]
-    align_pychopper = dict_pychopper[name]
+    ref_span_woodynano = dict_woodynano[name].reference_span
+    ref_span_pychopper = dict_pychopper[name].reference_span
+    if not min(ref_span_woodynano[-1],ref_span_pychopper[-1]) > max(ref_span_woodynano[0],ref_span_pychopper[0]):
+        both_mapped.pop(name)
+
+same_loci = both_mapped
+
+logfile.append(f'Numbers of both mapped/same loci/primary alignments:{same_loci.__len__()}')
+
+
+stats = {
+    'readname':[],
+    'software':[],
+    'read_length':[],
+    'mapped_read_length':[],
+    'matching_nucleotides':[],
+    'softclipped_nucleotides':[]
+}
+
+for name in same_loci:
+    for software, dictionary in zip(['woodynano','pychopper'],[dict_woodynano, dict_pychopper]):
+        stats['readname'].append(name)
+        stats['software'].append(software)
+        stats['read_length'].append(dictionary[name].read_length)
+        stats['mapped_read_length'].append(dictionary[name].mapped_read_length)
+        stats['matching_nucleotides'].append(dictionary[name].matching_nucleotides)
+        stats['softclipped_nucleotides'].append(sum(dictionary[name].clipping))
+
+df = pd.DataFrame(stats)
+df.to_csv(out_table)
 
 
 # %%
