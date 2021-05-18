@@ -3,6 +3,7 @@ from WoodyNano import samtools
 import os
 import sys
 import pandas as pd
+import numpy as np
 
 def last_name(alignment):
     return alignment.qname.split('|')[-1]
@@ -29,6 +30,8 @@ path_woodynano = '/Users/zhujiachen/Desktop/remap/Ptr_bio1_full_length_woodynano
 path_pychopper = '/Users/zhujiachen/Desktop/remap/Ptr_bio1_full_length_pychopper.sam'
 path_logfile = '/Users/zhujiachen/Desktop/remap/Ptr_bio1_sam_compare.log'
 out_table = '/Users/zhujiachen/Desktop/remap/Stats/Ptr_bio1_stats.csv'
+out_table_summarized = '/Users/zhujiachen/Desktop/remap/Stats/Ptr_bio1_stats_summarized.csv'
+
 
 logfile = logger(path=path_logfile)
 logfile.new()
@@ -71,7 +74,7 @@ for name in list(both_mapped):
     ref_span_woodynano = dict_woodynano[name].reference_span
     ref_span_pychopper = dict_pychopper[name].reference_span
     if not min(ref_span_woodynano[-1],ref_span_pychopper[-1]) > max(ref_span_woodynano[0],ref_span_pychopper[0]):
-        both_mapped.pop(name)
+        both_mapped.remove(name)
 
 same_loci = both_mapped
 
@@ -98,6 +101,39 @@ for name in same_loci:
 
 df = pd.DataFrame(stats)
 df.to_csv(out_table)
+logfile.append(f'Stats output (raw) at:{out_table}')
 
+# %%
+table1 = {
+    'parameters':[],
+    'software':[],
+    'mean':[],
+    'quantile_0.25':[],
+    'median':[],
+    'quantile_0.75':[]
+}
+
+
+for parameters in 'read_length','mapped_read_length','matching_nucleotides','softclipped_nucleotides':
+    for software in 'woodynano','pychopper':
+        table1['software'].append(software)
+        table1['parameters'].append(parameters)
+        table1['mean'].append(
+            np.mean(
+                df[ df['software'] == software ][parameters]
+                )
+            )
+        quantiles = np.quantile(
+                a=df[ df['software'] == software ][parameters], 
+                q=[0.25, 0.5, 0.75]
+                )
+        table1['quantile_0.25'].append(quantiles[0])
+        table1['median'].append(quantiles[1])
+        table1['quantile_0.75'].append(quantiles[2])
+
+table1['mean'] = [round(i,1)]
+
+logfile.append(f'Stats output (summarized) at:{out_table_summarized}')
+pd.DataFrame(table1).to_csv(out_table_summarized)
 
 # %%
