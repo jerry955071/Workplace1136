@@ -131,7 +131,8 @@ for parameters in 'read_length','mapped_read_length','matching_nucleotides','sof
         table1['median'].append(quantiles[1])
         table1['quantile_0.75'].append(quantiles[2])
 
-table1['mean'] = [round(i,1)]
+for col in 'mean','quantile_0.25', 'median', 'quantile_0.75':
+    table1[col] = [round(i,1) for i in table1[col]]
 
 logfile.append(f'Stats output (summarized) at:{out_table_summarized}')
 pd.DataFrame(table1).to_csv(out_table_summarized)
