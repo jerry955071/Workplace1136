@@ -58,7 +58,6 @@ for name in list(both_mapped):
 same_loci = both_mapped
 
 #%%
-
 stats = {
     'readname':[],
     'read_length_woodynano':[],
@@ -98,67 +97,3 @@ for name in same_loci:
 
 df = pd.DataFrame(stats)
 df.to_csv('/Users/zhujiachen/Desktop/WoodyNano_Revision/alignment_summary.csv', index=False)
-# %%
-# stratified 'df' with the difference in read length 
-df_w = df[df['software'] == 'woodynano']
-df_p = df[df['software'] == 'pychopper']
-
-a = np.array(df_w['read_length'])
-b = np.array(df_p['read_length'])
-c = a - b
-
-cond_d = (c >= min(c)) & (c < 0)
-cond_c = c == 0
-cond_b = (c > 0) & (c < -min(c))
-cond_a = c >= -min(c)
-
-def summary(array):
-    return f'mean:\t{np.mean(array)}\
-        \nquantile 0:\t{np.quantile(array, 0)}\
-        \nquantile 0.25:\t{np.quantile(array, .25)}\
-        \nquantile 0.5:\t{np.quantile(array, .5)}\
-        \nquantile 0.75:\t{np.quantile(array, .75)}\
-        \nquantile 1.0:\t{np.quantile(array, 1.0)}\
-        '
-
-def count_numbers(array):
-    numbers = set(array)
-    out_str = str()
-    for n in numbers:
-        out_str += f'WoodyNano identified {n} more exon(s):\t{sum(array == n)}\n'
-    
-    return out_str
-
-
-conds = cond_a, cond_b, cond_c, cond_d
-descriptions = ['group A', 'group B', 'group C', 'group D']
-print('Numbers of exon (W-P)')
-for cond,description in zip(conds,descriptions):
-    nexon_w = np.array(df_w[cond]['numbers_of_exon'])
-    nexon_p = np.array(df_p[cond]['numbers_of_exon'])
-    diff_nexon = nexon_w - nexon_p
-    # print(description,summary(diff_nexon),'', sep='\n')
-    print(f'{description}, {sum(cond)} reads', count_numbers(diff_nexon), sep='\n')
-
-# %%
-nexon_w = np.array(df_w[cond_a]['numbers_of_exon'])
-nexon_p = np.array(df_p[cond_a]['numbers_of_exon'])
-diff_nexon = nexon_w - nexon_p
-groupA_diff_nexon_woodynano_plus1 = df_w[cond_a][diff_nexon == 1]['readname']
-
-new_sam_woodynano = samtools.SAM()
-new_sam_pychopper = samtools.SAM()
-
-new_sam_woodynano.set_header(sam_woodynano.get_header())
-new_sam_pychopper.set_header(sam_woodynano.get_header())
-
-new_sam_woodynano.alignment = list()
-new_sam_pychopper.alignment = list()
-
-for i in groupA_diff_nexon_woodynano_plus1:
-    new_sam_woodynano.alignment.append(dict_woodynano[i])
-    new_sam_pychopper.alignment.append(dict_pychopper[i])
-
-new_sam_woodynano.export(f'/Users/zhujiachen/Desktop/WoodyNano_Revision/Group_SAM/groupA_diff_nexon_woodynano_plus1_woodynano.sam')
-new_sam_pychopper.export(f'/Users/zhujiachen/Desktop/WoodyNano_Revision/Group_SAM/groupA_diff_nexon_woodynano_plus1_pychopper.sam')
-# %%

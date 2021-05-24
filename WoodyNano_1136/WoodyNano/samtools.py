@@ -117,10 +117,13 @@ class SAM:
             for a in self.alignment:
                 o.write(f'{a.to_line().strip()}\n')
         
-        return 0
+        return
 
-    
-    def get_header(self, get_value=False):
+    def set_header(self, header):
+        self.__header = header
+        return
+
+    def get_header(self, get_value=True):
         if get_value:
             return self.__header
         else:
