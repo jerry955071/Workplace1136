@@ -8,11 +8,12 @@ import numpy as np
 def last_name(alignment):
     return alignment.qname.split('|')[-1]
 
-# path_woodynano = sys.argv[1]
-# path_pychopper = sys.argv[2]
+path_woodynano = sys.argv[1]
+path_pychopper = sys.argv[2]
+path_align_summary = sys.argv[3]
 
-path_woodynano = '/Users/zhujiachen/Desktop/WoodyNano_Revision/remap/Ptr_bio1_full_length_woodynano.sam'
-path_pychopper = '/Users/zhujiachen/Desktop/WoodyNano_Revision/remap/Ptr_bio1_full_length_pychopper.sam'
+# path_woodynano = '/Users/zhujiachen/Desktop/WoodyNano_Revision/remap/Ptr_bio1_full_length_woodynano.sam'
+# path_pychopper = '/Users/zhujiachen/Desktop/WoodyNano_Revision/remap/Ptr_bio1_full_length_pychopper.sam'
 
 sam_woodynano = samtools.SAM.Import(
     fname=path_woodynano,
@@ -96,4 +97,4 @@ for name in same_loci:
         stats[f'numbers_of_exon_{software}'].append(int(num_exon))
 
 df = pd.DataFrame(stats)
-df.to_csv('/Users/zhujiachen/Desktop/WoodyNano_Revision/alignment_summary.csv', index=False)
+df.to_csv(path_align_summary, index=False)
