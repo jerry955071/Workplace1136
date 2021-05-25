@@ -90,6 +90,8 @@ def aligned_toward(sam_read1, sam_read2):
     if diff_start == diff_end:
         # raise Exception(f'Read: {sam_read1.qname} diff_start == diff_end\n')
         print(f'Read: {sam_read1.qname} diff_start == diff_end\n')
+        print(f'{sam_read1.qname}\n')
+        print(f'{sam_read2.qname}\n')
     # else:
     #     return ('L',diff_start) if diff_start < diff_end else ('R',diff_end)
     return ('L', diff_start) if diff_start < diff_end else ('R', diff_end)
@@ -103,7 +105,7 @@ def position_extra_intron(max_distance, **kwargs):
     if diff > max_distance:
         # raise Exception(f'Distance between {read_w.qname} and {read_p.qname} is to long: {diff}bp\n')
         print(f'Distance between {read_w.qname} and {read_p.qname} is to long: {diff}bp\n')
-
+        print(f'{read_w.qname}\n{read_p.qname}\n')
     n_extra_intron = (len(read_w.cigar_summary['extron']) -len(read_p.cigar_summary['extron'])) / 2
 
     if n_extra_intron > 0:
