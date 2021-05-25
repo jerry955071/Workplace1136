@@ -88,10 +88,11 @@ def aligned_toward(sam_read1, sam_read2):
     diff_start, diff_end = abs(start1-start2), abs(end1-end2)
     
     if diff_start == diff_end:
-        raise Exception(f'Read: {sam_read1.qname}')
-    else:
-        return ('L',diff_start) if diff_start < diff_end else ('R',diff_end)
-
+        # raise Exception(f'Read: {sam_read1.qname} diff_start == diff_end\n')
+        print(f'Read: {sam_read1.qname} diff_start == diff_end\n')
+    # else:
+    #     return ('L',diff_start) if diff_start < diff_end else ('R',diff_end)
+    return ('L', diff_start) if diff_start < diff_end else ('R', diff_end)
 
 
 def position_extra_intron(max_distance, **kwargs):
@@ -100,7 +101,8 @@ def position_extra_intron(max_distance, **kwargs):
     
     aligned_to, diff = aligned_toward(read_w, read_p)
     if diff > max_distance:
-        raise Exception(f'Distance to long')
+        # raise Exception(f'Distance between {read_w.qname} and {read_p.qname} is to long: {diff}bp\n')
+        print(f'Distance between {read_w.qname} and {read_p.qname} is to long: {diff}bp\n')
 
     n_extra_intron = (len(read_w.cigar_summary['extron']) -len(read_p.cigar_summary['extron'])) / 2
 
@@ -230,7 +232,7 @@ def main(path_align_summary, path_gtf, path_out, path_sam={'woodynano':'', 'pych
         read_p.cal_all_stats()
 
         software, positions = position_extra_intron(
-            max_distance=241,
+            max_distance=276,
             **{'woodynano':read_w, 'pychopper':read_p}
         )
         annot = get_gene_locus(transcript_gtf, read_w, read_p)
@@ -248,17 +250,17 @@ def main(path_align_summary, path_gtf, path_out, path_sam={'woodynano':'', 'pych
 
 
 # %%
-# path_woodynano = sys.argv[1]
-# path_pychopper = sys.argv[2]
-# path_align_summary = sys.argv[3]
-# path_gtf = sys.argv[4]
-# path_out = sys.argv[5]
+path_woodynano = sys.argv[1]
+path_pychopper = sys.argv[2]
+path_align_summary = sys.argv[3]
+path_gtf = sys.argv[4]
+path_out = sys.argv[5]
 
-path_woodynano = '/Users/zhujiachen/Desktop/WoodyNano_Revision/remap/SAM/Ptr_bio1_full_length_woodynano.sam'
-path_pychopper = '/Users/zhujiachen/Desktop/WoodyNano_Revision/remap/SAM/Ptr_bio1_full_length_pychopper.sam'
-path_align_summary = '/Users/zhujiachen/Desktop/WoodyNano_Revision/alignment_summary.csv'
-path_gtf = "/Users/zhujiachen/Desktop/WoodyNano_Revision/GFF/Ptrichocarpa_533_v4.1.gene_exons.gtf"
-path_out = '/Users/zhujiachen/Desktop/WoodyNano_Revision/Ptr_bio1_types_of_extra_intron.csv'
+# path_woodynano = '/Users/zhujiachen/Desktop/WoodyNano_Revision/remap/SAM/Ptr_bio1_full_length_woodynano.sam'
+# path_pychopper = '/Users/zhujiachen/Desktop/WoodyNano_Revision/remap/SAM/Ptr_bio1_full_length_pychopper.sam'
+# path_align_summary = '/Users/zhujiachen/Desktop/WoodyNano_Revision/alignment_summary.csv'
+# path_gtf = "/Users/zhujiachen/Desktop/WoodyNano_Revision/GFF/Ptrichocarpa_533_v4.1.gene_exons.gtf"
+# path_out = '/Users/zhujiachen/Desktop/WoodyNano_Revision/Ptr_bio1_types_of_extra_intron.csv'
 
 main(
     path_align_summary=path_align_summary, 
