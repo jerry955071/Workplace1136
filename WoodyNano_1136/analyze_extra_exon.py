@@ -108,7 +108,7 @@ def position_extra_intron(max_distance, **kwargs):
 
     if n_extra_intron > 0:
         software = 'woodynano'
-        n_exn_extra_introntra = int(n_extra_intron)
+        n_extra_intron = int(n_extra_intron)
     elif n_extra_intron < 0:
         software = 'pychopper'
         n_extra_intron = abs(int(n_extra_intron))
