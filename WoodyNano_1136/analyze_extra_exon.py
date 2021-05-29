@@ -2,6 +2,7 @@
 import pandas as pd
 import sys
 from WoodyNano import samtools
+import traceback
 
 def gene_picker(gene_file, chromosome, ref_span):
     name_correct = gene_file['seqname'] == chromosome
@@ -30,7 +31,10 @@ def gene_picker2(gene_file, chromosome, sticky_site, sites):
     try:
         out_slice = chr_slice[chr_slice['geneid'] == str(gene_id[0])]
         return out_slice
-
+    except Exception as ex:
+        s = traceback.format_exc()
+        print(s)
+        raise ex
     except IndexError:
         return None
 
@@ -233,8 +237,7 @@ def main(path_align_summary, path_gtf, path_out, path_sam={'woodynano':'', 'pych
         read_w.cal_all_stats()
         read_p.cal_all_stats()
         
-        try {
-
+        try:
             software, positions = position_extra_intron(
                 max_distance=276,
                 **{'woodynano':read_w, 'pychopper':read_p}
@@ -242,10 +245,12 @@ def main(path_align_summary, path_gtf, path_out, path_sam={'woodynano':'', 'pych
             annot = get_gene_locus(transcript_gtf, read_w, read_p)
 
             n_extra, no_ref, n_in, n_out = classify_extra_intron(annot, positions)
-        }
-        catch (Exception ex) {
-            // Todo: printf(ex)
-        }
+        
+        except Exception as ex:
+            # Todo: printf(ex)
+            print(ex)
+#             raise ex
+            continue
 
         data[software]['n_extra'] += n_extra
         data[software]['no_ref'] += no_ref
