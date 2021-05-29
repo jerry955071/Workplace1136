@@ -99,7 +99,7 @@ def aligned_toward(sam_read1, sam_read2):
 def position_extra_intron(max_distance, **kwargs):
     read_w = kwargs['woodynano']
     read_p = kwargs['pychopper']
-    
+   
     aligned_to, diff = aligned_toward(read_w, read_p)
     if diff > max_distance:
         # raise Exception(f'Distance between {read_w.qname} and {read_p.qname} is to long: {diff}bp\n')
@@ -146,7 +146,8 @@ def get_gene_locus(gff, read1, read2):
     
     if transcript_slice.shape[0] == 0:
         # print('Novel gene expression locus')
-        return (None,None)
+        raise new Exception("transcript.slice error");
+        # return (None,None)
         
     else:
         annot = min(transcript_slice['start']), max(transcript_slice['end']) 
@@ -231,14 +232,20 @@ def main(path_align_summary, path_gtf, path_out, path_sam={'woodynano':'', 'pych
         read_p = dict_pychopper[readname]
         read_w.cal_all_stats()
         read_p.cal_all_stats()
+        
+        try {
 
-        software, positions = position_extra_intron(
-            max_distance=276,
-            **{'woodynano':read_w, 'pychopper':read_p}
-        )
-        annot = get_gene_locus(transcript_gtf, read_w, read_p)
+            software, positions = position_extra_intron(
+                max_distance=276,
+                **{'woodynano':read_w, 'pychopper':read_p}
+            )
+            annot = get_gene_locus(transcript_gtf, read_w, read_p)
 
-        n_extra, no_ref, n_in, n_out = classify_extra_intron(annot, positions)
+            n_extra, no_ref, n_in, n_out = classify_extra_intron(annot, positions)
+        }
+        catch (Exception ex) {
+            // Todo: printf(ex)
+        }
 
         data[software]['n_extra'] += n_extra
         data[software]['no_ref'] += no_ref
