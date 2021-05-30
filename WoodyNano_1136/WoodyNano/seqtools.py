@@ -70,8 +70,8 @@ class SeqFastq:
     def __repr__(self):
         return f"info: {self.info}\
                 \ncutpoint: {self.cutpoint}\
-                \nadaptor: {self.adaptorprimer}\
-                \nreadbody: {self.bodyprimer}\
+                \nadaptor: {self.adprimer}\
+                \nreadbody: {self.bdprimer}\
                 \nis_fusion: {self.fusion}\
                 \nstrand: {self.strand}\
                 \ncut_primer: {self.cut_primer}\
@@ -81,9 +81,12 @@ class SeqFastq:
                 \nqscore:\n{self.qscore}"
 
     def mean_q(self):
-        p = [10**(-(ord(q)-33)/10) for q in self.qscore]
-        mq = -10 * log(np.mean(p),10)
-        return mq 
+        if len(self.qscore) != 0:
+            p = [10**(-(ord(q)-33)/10) for q in self.qscore]
+            mq = -10 * log(np.mean(p),10)        
+            return mq 
+        else:
+            return 0
 
     @staticmethod
     def Import(fname):

@@ -53,7 +53,8 @@ def Figure10_modified(data, path, title, lims=[0, 6000]):
 
     return
 
-path_summarized_csv = '/Users/zhujiachen/Desktop/WoodyNano_Revision/Stats/Summarized.csv'
+
+path_summarized_csv = '/home/woodformation/Processing_data/CCC/WoodyNano_revision/Stats/Summarized.csv'
 tmp = pd.read_csv(path_summarized_csv)
 
 reshaped_df = {
@@ -70,10 +71,19 @@ reshaped_df['Species_bio'] = list(
     tmp[tmp['software'] == 'pychopper']['bioname'])
 
 reshaped_df = pd.DataFrame(reshaped_df)
+slice_1 = reshaped_df[reshaped_df['Species_bio'] == 'Egr_bio1']
+slice_2 = reshaped_df[reshaped_df['Species_bio'] == 'Egr_bio2']
+slice_3 = reshaped_df[reshaped_df['Species_bio'] == 'Ptr_bio1']
+slice_4 = reshaped_df[reshaped_df['Species_bio'] == 'Ptr_bio2']
+slice_5 = reshaped_df[reshaped_df['Species_bio'] == 'Lch_bio1']
+slice_6 = reshaped_df[reshaped_df['Species_bio'] == 'Lch_bio2']
 
+sorted_df = pd.concat([slice_1, slice_2, slice_3, slice_4, slice_5, slice_6])
+
+#%%
 Figure10_modified(
-    data=reshaped_df,
-    path='/Users/zhujiachen/Desktop/WoodyNano_Revision/Figure10_revision.png',
+    data=sorted_df,
+    path='/home/woodformation/Processing_data/CCC/WoodyNano_revision/Figure10_revision_sorted.png',
     title=''
 )
 #%%
