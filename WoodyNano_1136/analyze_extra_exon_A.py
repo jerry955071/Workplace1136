@@ -36,10 +36,11 @@ def gene_picker2(gene_file, chromosome, sticky_site, sites):
 
 
 
-def gene_picker3(gene_file, chromosome, sticky_site):
+def gene_picker3(gene_file, chromosome, sticky_site, strand):
     name_correct = gene_file['seqname'] == chromosome
     left_in = gene_file['start'] <= sticky_site + 200
     right_in = gene_file['end'] >= sticky_site - 200
+    strand_match = gene_file['strand'] == strand
     tmp = gene_file[name_correct & left_in & right_in]
     # if set(tmp['geneid']).__len__() == 1:
     #     return tmp
@@ -148,10 +149,12 @@ def get_gene_locus(gff, read1, read2):
     elif aligned_to == 'L':
         sticky_site = max(read1.reference_span[0], read2.reference_span[0])
     
+    strand = '+' if not ('16' in read1.split_flag()) else '-'
     transcript_slice = gene_picker3(
         gene_file=gff,
         chromosome=read1.rname,
-        sticky_site=sticky_site
+        sticky_site=sticky_site,
+        strand=strand
         )
     
     if transcript_slice.shape[0] == 0:
@@ -294,4 +297,5 @@ main(
         'pychopper':path_pychopper
         }
     )
+
 # %%

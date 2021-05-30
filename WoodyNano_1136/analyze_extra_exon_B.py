@@ -3,6 +3,7 @@ import pandas as pd
 import sys
 from WoodyNano import samtools
 
+
 def gene_picker(gene_file, chromosome, ref_span):
     name_correct = gene_file['seqname'] == chromosome
     left_in = gene_file['start'] <= ref_span[0]+200
@@ -11,20 +12,19 @@ def gene_picker(gene_file, chromosome, ref_span):
     # if not sum(name_correct & left_in & right_in) == 1:
     #     print(f'Not one {chromosome}')
     #     return
-    # else: 
+    # else:
     #     return [int(gene_file[name_correct & left_in & right_in][i]) for i in [3,4]]
     return tmp
-
 
 
 def gene_picker2(gene_file, chromosome, sticky_site, sites):
     chr_slice = gene_file[gene_file['seqname'] == chromosome]
     if sites == 'L':
         tmp = abs(chr_slice['start'] - sticky_site)
-        
+
     if sites == 'R':
         tmp = abs(chr_slice['end'] - sticky_site)
-        
+
     gene_id = list(chr_slice[tmp == min(tmp)]['geneid'])
 
     try:
@@ -35,19 +35,18 @@ def gene_picker2(gene_file, chromosome, sticky_site, sites):
         return None
 
 
-
-def gene_picker3(gene_file, chromosome, sticky_site):
+def gene_picker3(gene_file, chromosome, sticky_site, strand):
     name_correct = gene_file['seqname'] == chromosome
     left_in = gene_file['start'] <= sticky_site + 200
     right_in = gene_file['end'] >= sticky_site - 200
+    strand_match = gene_file['strand'] == strand
     tmp = gene_file[name_correct & left_in & right_in]
     # if set(tmp['geneid']).__len__() == 1:
     #     return tmp
     # else:
     #     print(f'Weird loci {chromosome}:{sticky_site}')
     return tmp
-    
-    
+
 
 def nth_extron(n, feature):
     """
@@ -60,18 +59,17 @@ def nth_extron(n, feature):
         return 2*n
 
 
-
 def nth_extron_position(extron_list, ref_start, n):
     if n <= 0 or n > extron_list.__len__():
-        raise Exception('Extrons are counted from 1, 2,..., N; N is the numbers of extron')
-    
+        raise Exception(
+            'Extrons are counted from 1, 2,..., N; N is the numbers of extron')
+
     if n == 1:
         return ref_start, ref_start + extron_list[n-1] - 1
-    
+
     elif n <= extron_list.__len__():
         last_end = nth_extron_position(extron_list, ref_start, n-1)[1] + 1
         return last_end, last_end + extron_list[n-1] - 1
-
 
 
 def fragment_position(read, n, feature):
@@ -81,12 +79,11 @@ def fragment_position(read, n, feature):
     return nth_extron_position(extron_list, ref_start, n)
 
 
-
 def aligned_toward(sam_read1, sam_read2):
     start1, end1 = sam_read1.reference_span
     start2, end2 = sam_read2.reference_span
     diff_start, diff_end = abs(start1-start2), abs(end1-end2)
-    
+
     if diff_start == diff_end:
         # raise Exception(f'Error: aligned_toward()\nRead: {sam_read1.qname} diff_start == diff_end\n')
         print(f'Read: {sam_read1.qname} diff_start == diff_end\n')
@@ -99,11 +96,11 @@ def aligned_toward(sam_read1, sam_read2):
 def position_extra_intron(max_distance, **kwargs):
     read_w = kwargs['woodynano']
     read_p = kwargs['pychopper']
-    
+
     aligned_to, diff = aligned_toward(read_w, read_p)
-    if aligned_to == None:        
+    if aligned_to == None:
         return None, None
-    
+
     else:
         if diff > max_distance:
             # raise Exception(f'Error: position_extra_intron()\n\
@@ -113,9 +110,10 @@ def position_extra_intron(max_distance, **kwargs):
             # print(f'WoodyNano:\n{read_w}\nPychopper:\n{read_p}\n')
 
             return None, None
-        
-        else: 
-            n_extra_intron = (len(read_w.cigar_summary['extron']) -len(read_p.cigar_summary['extron'])) / 2
+
+        else:
+            n_extra_intron = (
+                len(read_w.cigar_summary['extron']) - len(read_p.cigar_summary['extron'])) / 2
 
             if n_extra_intron > 0:
                 software = 'woodynano'
@@ -140,29 +138,28 @@ def position_extra_intron(max_distance, **kwargs):
             return software, positions
 
 
-
 def get_gene_locus(gff, read1, read2):
     aligned_to, diff = aligned_toward(read1, read2)
     if aligned_to == 'R':
         sticky_site = min(read1.reference_span[1], read2.reference_span[1])
     elif aligned_to == 'L':
         sticky_site = max(read1.reference_span[0], read2.reference_span[0])
-    
+
+    strand = '+' if not ('16' in read1.split_flag()) else '-'
     transcript_slice = gene_picker3(
         gene_file=gff,
         chromosome=read1.rname,
-        sticky_site=sticky_site
-        )
-    
+        sticky_site=sticky_site,
+        strand=strand
+    )
+
     if transcript_slice.shape[0] == 0:
         # print('Novel gene expression locus')
-        return (None,None)
-        
+        return (None, None)
+
     else:
-        annot = min(transcript_slice['start']), max(transcript_slice['end']) 
+        annot = min(transcript_slice['start']), max(transcript_slice['end'])
         return annot
-
-
 
 
 def classify_extra_intron(annot, positions):
@@ -170,7 +167,7 @@ def classify_extra_intron(annot, positions):
     no_ref = 0
     n_in = 0
     n_out = 0
-    
+
     if annot[0]:
         for pos in positions:
             if (pos[0] > annot[0]) and pos[1] < annot[1]:
@@ -183,28 +180,28 @@ def classify_extra_intron(annot, positions):
     return n_extra, no_ref, n_in, n_out
 
 
-def main(path_align_summary, path_gtf, path_out, path_sam={'woodynano':'', 'pychopper':''}):
+def main(path_align_summary, path_gtf, path_out, path_sam={'woodynano': '', 'pychopper': ''}):
     def last_name(alignment):
         return alignment.qname.split('|')[-1]
 
     # read align_summary file
     df = pd.read_csv(path_align_summary)
     c = (df['read_length_woodynano'] - df['read_length_pychopper'])
-    cond1 = (c >= min(c)) & (c < 0) # D
-    cond2 = c == 0 # C
-    cond3 = (c > 0) & (c < -min(c)) # B
-    cond4 = c >= -min(c) # A
+    cond1 = (c >= min(c)) & (c < 0)  # D
+    cond2 = c == 0  # C
+    cond3 = (c > 0) & (c < -min(c))  # B
+    cond4 = c >= -min(c)  # A
     cond0 = df['numbers_of_exon_woodynano'] != df['numbers_of_exon_pychopper']
     df = df[cond0 & cond3]
 
     # read gene annotation file
     gtf = pd.read_csv(path_gtf, sep='\t', header=None)
     gtf.columns = [
-        'seqname', 'source', 'feature', \
-        'start', 'end', 'score', 'strand', \
+        'seqname', 'source', 'feature',
+        'start', 'end', 'score', 'strand',
         'frame', 'attribute']
 
-    gtf['geneid'] = [_.split("\"")[-2]  for _ in gtf['attribute']]
+    gtf['geneid'] = [_.split("\"")[-2] for _ in gtf['attribute']]
     transcript_gtf = gtf[gtf['feature'] == 'transcript']
 
     # read samfiles
@@ -228,13 +225,13 @@ def main(path_align_summary, path_gtf, path_out, path_sam={'woodynano':'', 'pych
             dict_pychopper[last_name(i)] = i
 
     data = {
-        'woodynano':{
+        'woodynano': {
             'n_in': 0,
             'n_out': 0,
             'no_ref': 0,
-            'total': 0    
+            'total': 0
         },
-        'pychopper':{
+        'pychopper': {
             'n_in': 0,
             'n_out': 0,
             'no_ref': 0,
@@ -250,7 +247,7 @@ def main(path_align_summary, path_gtf, path_out, path_sam={'woodynano':'', 'pych
 
         software, positions = position_extra_intron(
             max_distance=276,
-            **{'woodynano':read_w, 'pychopper':read_p}
+            **{'woodynano': read_w, 'pychopper': read_p}
         )
         # print(type(software), type(positions))
 
@@ -286,12 +283,13 @@ path_out = sys.argv[5]
 # path_out = '/Users/zhujiachen/Desktop/WoodyNano_Revision/Ptr_bio1_types_of_extra_intron.csv'
 
 main(
-    path_align_summary=path_align_summary, 
-    path_gtf=path_gtf, 
-    path_out=path_out, 
+    path_align_summary=path_align_summary,
+    path_gtf=path_gtf,
+    path_out=path_out,
     path_sam={
-        'woodynano':path_woodynano, 
-        'pychopper':path_pychopper
-        }
-    )
+        'woodynano': path_woodynano,
+        'pychopper': path_pychopper
+    }
+)
+
 # %%

@@ -360,3 +360,15 @@ class SAM:
             self.cal_ref_span(keep=keep, out=False)
             self.cal_matching_nucleotides(keep=keep, out=False)
             return 
+
+        def split_flag(self):
+            a = bin(self.flag)[2:]
+
+            pos = 0
+            out = list()
+            while pos < len(a):
+                if a[::-1][pos] == '1':
+                    out.append(int('0b1'+'0'*pos, 2))
+                pos += 1
+
+            return out
