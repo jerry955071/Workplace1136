@@ -1,18 +1,15 @@
 # %%
 import pandas as pd
-import numpy as np
 #%%
-csv_path = '/Users/zhujiachen/Desktop/WoodyNano_Revision/Stats/Summarized.csv'
-df = pd.read_csv(csv_path, index_col=0)
+csv_path = '/home/woodformation/Processing_data/CCC/Processed_data_WoodyNano/Stats/Summarized.csv'
+df = pd.read_csv(csv_path)
 
 
 # %%
-a = np.array(df[df['software'] == 'woodynano']['read_length'])
-b = np.array(df[df['software'] == 'pychopper']['read_length'])
-c = a - b
+c = df['read_length_woodynano'] - df['read_length_pychopper']
 # %%
-
-min(c), 0, -min(c)
+print('interval')
+print(min(c), 0, -min(c))
 
 cond1 = (c >= min(c)) & (c < 0)
 cond2 = c == 0

@@ -37,6 +37,7 @@ for i in sam_pychopper.alignment:
 
 
 both_mapped = set(dict_woodynano.keys()) & set(dict_pychopper.keys())
+print(f'Both mapped:\t{both_mapped.__len__()}')
 
 for i in set(dict_woodynano.keys()) - both_mapped:
     dict_woodynano.pop(i)
@@ -57,6 +58,7 @@ for name in list(both_mapped):
         both_mapped.remove(name)
 
 same_loci = both_mapped
+print(f'Same loci:\t{same_loci.__len__()}')
 
 #%%
 stats = {

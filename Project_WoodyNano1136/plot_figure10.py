@@ -54,36 +54,24 @@ def Figure10_modified(data, path, title, lims=[0, 6000]):
     return
 
 
-path_summarized_csv = '/home/woodformation/Processing_data/CCC/WoodyNano_revision/Stats/Summarized.csv'
+path_summarized_csv = '/home/woodformation/Processing_data/CCC/Processed_data_WoodyNano/Stats/Summarized.csv'
 tmp = pd.read_csv(path_summarized_csv)
 
-reshaped_df = {
-    'Woodynano': [],
-    'Pychopper': [],
-    'Species_bio': []
-}
-
-reshaped_df['Woodynano'] = list(
-    tmp[tmp['software'] == 'woodynano']['read_length'])
-reshaped_df['Pychopper'] = list(
-    tmp[tmp['software'] == 'pychopper']['read_length'])
-reshaped_df['Species_bio'] = list(
-    tmp[tmp['software'] == 'pychopper']['bioname'])
-
-reshaped_df = pd.DataFrame(reshaped_df)
-slice_1 = reshaped_df[reshaped_df['Species_bio'] == 'Egr_bio1']
-slice_2 = reshaped_df[reshaped_df['Species_bio'] == 'Egr_bio2']
-slice_3 = reshaped_df[reshaped_df['Species_bio'] == 'Ptr_bio1']
-slice_4 = reshaped_df[reshaped_df['Species_bio'] == 'Ptr_bio2']
-slice_5 = reshaped_df[reshaped_df['Species_bio'] == 'Lch_bio1']
-slice_6 = reshaped_df[reshaped_df['Species_bio'] == 'Lch_bio2']
+reshaped_df = tmp[['bioname', 'read_length_woodynano', 'read_length_pychopper']]
+slice_1 = reshaped_df[reshaped_df['bioname'] == 'Egr_bio1']
+slice_2 = reshaped_df[reshaped_df['bioname'] == 'Egr_bio2']
+slice_3 = reshaped_df[reshaped_df['bioname'] == 'Ptr_bio1']
+slice_4 = reshaped_df[reshaped_df['bioname'] == 'Ptr_bio2']
+slice_5 = reshaped_df[reshaped_df['bioname'] == 'Lch_bio1']
+slice_6 = reshaped_df[reshaped_df['bioname'] == 'Lch_bio2']
 
 sorted_df = pd.concat([slice_1, slice_2, slice_3, slice_4, slice_5, slice_6])
+sorted_df.columns = ['Species_bio', 'Woodynano', 'Pychopper']
 
 #%%
 Figure10_modified(
     data=sorted_df,
-    path='/home/woodformation/Processing_data/CCC/WoodyNano_revision/Figure10_revision_sorted.png',
+    path='/home/woodformation/Processing_data/CCC/Processed_data_WoodyNano/Figure10/Figure10_revision_sorted.png',
     title=''
 )
 #%%

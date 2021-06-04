@@ -7,8 +7,8 @@ from math import log
 class SeqFasta:
     def __init__(
             self,
-            info=str,
-            seq=str
+            info=str(),
+            seq=str()
         ):
         self.info = info
         self.seq = seq
@@ -41,11 +41,13 @@ class SeqFasta:
 
 class SeqFastq:
     def __init__(self,
-                 info=str,
-                 seq=str,
-                 info2=str,
-                 qscore=str):
+                 info: str,
+                 seq: str,
+                 info2: str,
+                 qscore: str
+                 ) -> None:
         self.info = info
+        self.info2 = info2
         self.adprimer = {
             'fp': None,
             'rp': None,
@@ -58,7 +60,7 @@ class SeqFastq:
             'fp_rc': None,
             'rp_rc': None
         }
-        self.is_fusion = None
+        self.body_hit = None
         self.seq = seq
         self.qscore = qscore
         self.strand = None
@@ -72,7 +74,7 @@ class SeqFastq:
                 \ncutpoint: {self.cutpoint}\
                 \nadaptor: {self.adprimer}\
                 \nreadbody: {self.bdprimer}\
-                \nis_fusion: {self.fusion}\
+                \nbody_hit: {self.body_hit}\
                 \nstrand: {self.strand}\
                 \ncut_primer: {self.cut_primer}\
                 \ncut_ployA: {self.cut_ploy}\
@@ -81,52 +83,57 @@ class SeqFastq:
                 \nqscore:\n{self.qscore}"
 
     def mean_q(self):
-        if len(self.qscore) != 0:
-            p = [10**(-(ord(q)-33)/10) for q in self.qscore]
-            mq = -10 * log(np.mean(p),10)        
-            return mq 
+        p = [10**(-(ord(q)-33)/10) for q in self.qscore]
+        mq = -10 * log(np.mean(p),10)
+        return mq 
+
+    @staticmethod
+    def read(fileObject):
+        buffer = [fileObject.readline().strip() for _ in range(4)]
+
+        if any([len(i) == 0 for i in buffer]):
+            # print("EOF")
+            return None
+
         else:
-            return 0
+            if not buffer[0][0] == '@':
+                raise Exception('Error: Missing lines')
+
+            else:
+                return SeqFastq(
+                    info=buffer[0],
+                    seq=buffer[1],
+                    info2=buffer[2],
+                    qscore=buffer[3]
+                )
+
+    def write(self, fileObject):
+        fileObject.write(self.info+'\n')
+        fileObject.write(self.seq+'\n')
+        fileObject.write(self.info2+'\n')
+        fileObject.write(self.qscore+'\n')
+        return
+
 
     @staticmethod
     def Import(fname):
         fastq = dict()
         
         with open(fname) as f:
-            n = 0
-            
-            for l in f:
-                n += 1
-                new_read = SeqFastq()
-                
-                # check name line start with @    
-                if not '@' == l[0]:
-                    print(f"The {n}th line of '{fname}' does not start with '@'")
-                    break
-                else:
-                    new_read.info = re.split('@', l.strip())[1]
-                
-                # read seq line
-                new_read.seq = f.readline().strip()
-                n += 1
-                
-                # read second info line
-                new_read.info2 = f.readline().strip()
-                n += 1
-                
-                # read qscore line
-                new_read.qscore = f.readline().strip()
-            
-                fastq[str(new_read.info)] = new_read
+            new_read = SeqFastq.read(f)
+            while new_read:
+                fastq[new_read.info] = new_read
+                new_read = SeqFastq.read(f)
         
         return fastq
+
     
     @staticmethod
     def Export(fastq_dict, fname):
         with open(fname, 'w') as o:
             for i in list(fastq_dict.keys()):
-                read = fastq_dict[i]
-                o.write(read.info+'\n')
-                o.write(read.seq+'\n')
-                o.write(read.info2+'\n')
-                o.write(read.qscore+'\n')
+                fastq_dict[i].write(o)
+
+    
+    
+

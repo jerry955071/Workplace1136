@@ -1,5 +1,6 @@
 #%%
 from WoodyNano import samtools
+from WoodyNano import logger
 import os
 import sys
 import pandas as pd
@@ -7,21 +8,6 @@ import numpy as np
 
 def last_name(alignment):
     return alignment.qname.split('|')[-1]
-
-class logger(object):
-    def __init__(self, path=None):
-        super().__init__()
-        self._path = path
-
-    def new(self, times=None):
-        with open(self._path, 'w'):
-            os.utime(self._path, times)
-        return
-
-    def append(self, lines=None):
-        with open(self._path, 'a') as o:
-            o.write(lines+'\n')
-        return
 
 # path_woodynano = sys.argv[1]
 # path_pychopper = sys.argv[2]
