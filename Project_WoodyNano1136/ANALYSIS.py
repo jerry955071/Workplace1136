@@ -110,7 +110,7 @@ for parameters in 'read_length','mapped_read_length','matching_nucleotides','sof
                 )
             )
         quantiles = np.quantile(
-                a=df[ df['software'] == software ][parameters], 
+                a=df[ df['software'] == software ][parameters],
                 q=[0.25, 0.5, 0.75]
                 )
         table1['quantile_0.25'].append(quantiles[0])
@@ -124,3 +124,5 @@ logfile.append(f'Stats output (summarized) at:{out_table_summarized}')
 pd.DataFrame(table1).to_csv(out_table_summarized)
 
 # %%
+def try_atom():
+    print('This line is edit with atoms')
