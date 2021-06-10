@@ -1,7 +1,9 @@
 # %%
 import pandas as pd
+import sys
 #%%
-csv_path = '/home/woodformation/Processing_data/CCC/Processed_data_WoodyNano/Stats/Summarized.csv'
+csv_path = sys.argv[1]
+# csv_path = '/home/woodformation/Processing_data/CCC/Processed_data_WoodyNano/Stats/Summarized.csv'
 df = pd.read_csv(csv_path)
 
 

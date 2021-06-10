@@ -1,8 +1,14 @@
 import pandas as pd
 import os
+import sys
 
 # get csv filelist
-csv_path = '/home/woodformation/Processing_data/CCC/Processed_data_WoodyNano/Stats'
+# csv_path = '/home/woodformation/Processing_data/CCC/Processed_data_WoodyNano/Stats'
+try:
+    csv_path = sys.argv[1]
+except:
+    raise Exception('Path of stats were required')
+    
 filelist = os.listdir(csv_path)
 for i in filelist.copy():
     if not 'all' in i:

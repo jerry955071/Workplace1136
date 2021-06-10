@@ -1,8 +1,12 @@
 #%%
 import pandas as pd
 import numpy as np
+import sys
 #%%
-csv_path = '/home/woodformation/Processing_data/CCC/Processed_data_WoodyNano/Stats/Summarized.csv'
+csv_path = sys.argv[1]
+path_table1 = sys.argv[2]
+
+# csv_path = '/home/woodformation/Processing_data/CCC/Processed_data_WoodyNano/Stats/Summarized.csv'
 df = pd.read_csv(csv_path)
 # %%
 stats = ['read_length','mapped_read_length','matching_nucleotides','softclipped_nucleotides']
@@ -22,5 +26,5 @@ for stat in stats:
         table1['Pychopper'].append(np.mean(df[cond][f'{stat}_pychopper']))
 
 # %%
-pd.DataFrame(table1).to_csv('/home/woodformation/Processing_data/CCC/Processed_data_WoodyNano/Table1/Table1.csv',index=False)
+pd.DataFrame(table1).to_csv(path_table1, index=False)
 # %%

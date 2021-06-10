@@ -2,7 +2,10 @@
 import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
-
+import sys
+#%%
+csv_path = sys.argv[1]
+figure10_path = sys.argv[2]
 
 def Figure10_modified(data, path, title, lims=[0, 6000]):
     sns.set_theme(
@@ -54,7 +57,7 @@ def Figure10_modified(data, path, title, lims=[0, 6000]):
     return
 
 
-path_summarized_csv = '/home/woodformation/Processing_data/CCC/Processed_data_WoodyNano/Stats/Summarized.csv'
+path_summarized_csv = csv_path
 tmp = pd.read_csv(path_summarized_csv)
 
 reshaped_df = tmp[['bioname', 'read_length_woodynano', 'read_length_pychopper']]
@@ -71,7 +74,7 @@ sorted_df.columns = ['Species_bio', 'Woodynano', 'Pychopper']
 #%%
 Figure10_modified(
     data=sorted_df,
-    path='/home/woodformation/Processing_data/CCC/Processed_data_WoodyNano/Figure10/Figure10_revision_sorted.png',
+    path=figure10_path,
     title=''
 )
 #%%
