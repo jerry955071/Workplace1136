@@ -54,8 +54,8 @@ for cond, group in zip(conds, groups):
     main(
         read_names=df[cond],
         path_out={
-            'woodynano':f'{path_woodynano.split('.sam')[0]}_group_{group}.sam',
-            'pychopper':f'{path_pychopper.split('.sam')[0]}_group_{group}.sam'
+            'woodynano':f"{path_woodynano.split('.sam')[0]}_group_{group}.sam",
+            'pychopper':f"{path_pychopper.split('.sam')[0]}_group_{group}.sam"
             }
         path_sam={
             'woodynano':path_woodynano,
