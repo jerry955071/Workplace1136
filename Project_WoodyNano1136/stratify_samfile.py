@@ -13,7 +13,6 @@ cond2 = c == 0  # C
 cond3 = (c > 0) & (c < -min(c))  # B
 cond4 = c >= -min(c)  # A
 
-read_names = df[cond1]
 
 def main(
     read_names,
@@ -54,7 +53,7 @@ for cond, group in zip(conds, groups):
     prefix_woodynano = path_woodynano.split('.sam')[0]
     prefix_pychopper = path_pychopper.split('.sam')[0]
     main(
-        read_names=df[cond],
+        read_names=df[cond]['readname'],
         path_out={
             'woodynano':f"{prefix_woodynano}_group_{group}.sam",
             'pychopper':f"{prefix_pychopper}_group_{group}.sam"
