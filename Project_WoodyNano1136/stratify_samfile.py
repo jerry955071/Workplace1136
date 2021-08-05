@@ -57,10 +57,7 @@ for cond, group in zip(conds, groups):
             'woodynano':f"{path_woodynano.split('.sam')[0]}_group_{group}.sam",
             'pychopper':f"{path_pychopper.split('.sam')[0]}_group_{group}.sam"
             }
-        path_sam={
-            'woodynano':path_woodynano,
-            'pychopper':path_pychopper
-        }
+        path_sam={'woodynano':path_woodynano,'pychopper':path_pychopper}
         )
 
 # end of script
