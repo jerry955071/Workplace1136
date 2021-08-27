@@ -12,7 +12,10 @@ cond1 = (c >= min(c)) & (c < 0)  # D
 cond2 = c == 0  # C
 cond3 = (c > 0) & (c < -min(c))  # B
 cond4 = c >= -min(c)  # A
+cond_bio = df['bioname'] == path_woodynano.split('/')[-1].split('_full')[0]
 
+bio_name = path_woodynano.split('/')[-1].split('_full')[0]
+print(bio_name)
 
 def main(
     read_names,
@@ -33,16 +36,23 @@ def main(
         get_primary=True
     )
 
+    new_woodynano = samtools.SAM()
+    new_woodynano.set_header(sam_woodynano.get_header())
+    new_pychopper = samtools.SAM()
+    new_pychopper.set_header(sam_pychopper.get_header())
+
     for i in sam_woodynano.alignment:
-        if not last_name(i) in read_names:
-            sam_woodynano.alignment.remove(i)
+        if last_name(i) in read_names:
+            new_woodynano.alignment.append(i)
 
     for i in sam_pychopper.alignment:
-        if not last_name(i) in read_names:
-            sam_pychopper.alignment.remove(i)
+        if last_name(i) in read_names:
+            new_pychopper.alignment.append(i)
 
-    sam_woodynano.export(fname=path_out['woodynano'])
-    sam_pychopper.export(fname=path_out['pychopper'])
+    print(len(new_woodynano.alignment), len(new_pychopper.alignment))
+
+    new_woodynano.export(fname=path_out['woodynano'])
+    new_pychopper.export(fname=path_out['pychopper'])
 
     return
 
@@ -50,10 +60,16 @@ conds = [cond1, cond2, cond3, cond4]
 groups = ['D', 'C', 'B', 'A']
 
 for cond, group in zip(conds, groups):
+    print(group, sum(cond))
     prefix_woodynano = path_woodynano.split('.sam')[0]
     prefix_pychopper = path_pychopper.split('.sam')[0]
+
+    print(f"{prefix_woodynano}_group_{group}.sam", f"{prefix_pychopper}_group_{group}.sam")
+    
+    read_names = set(df[cond & cond_bio]['readname'])
+
     main(
-        read_names=df[cond]['readname'],
+        read_names,
         path_out={
             'woodynano':f"{prefix_woodynano}_group_{group}.sam",
             'pychopper':f"{prefix_pychopper}_group_{group}.sam"
