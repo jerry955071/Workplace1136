@@ -101,7 +101,7 @@ class SAM:
             # the following if loop is for debugging
             if len(line) < 10:
                 print(line)
-                break
+                
             
             new = SAM.Alignment.asAlignment(line)
 
