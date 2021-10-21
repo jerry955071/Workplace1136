@@ -3,6 +3,7 @@ from WoodyNano import utils
 from parsy import regex
 import re
 import numpy as np
+import sys
 
 '''
 Define class alignment_results()
@@ -99,9 +100,9 @@ class SAM:
             
             line = line.strip().split(sep='\t')
             # the following if loop is for debugging
-            if len(line) < 10:
-                print(line)
-                
+            if len(line) != 11:
+                print(line, file=sys.stderr)
+                continue
             
             new = SAM.Alignment.asAlignment(line)
 
