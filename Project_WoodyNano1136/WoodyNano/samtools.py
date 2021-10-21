@@ -94,6 +94,9 @@ class SAM:
             alignment_section = [f] + o.readlines()
 
         for line in alignment_section:
+            if len(line) == 0:
+                break
+            
             line = line.strip().split(sep='\t')
             new = SAM.Alignment.asAlignment(line)
 
