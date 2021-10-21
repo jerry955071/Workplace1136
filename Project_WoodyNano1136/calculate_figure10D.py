@@ -1,8 +1,10 @@
 # %%
 import pandas as pd
 import numpy as np
+import sys
 #%%
-csv_path = '/Users/zhujiachen/Desktop/WoodyNano_Revision/Stats/Summarized.csv'
+# csv_path = '/Users/zhujiachen/Desktop/WoodyNano_Revision/Stats/Summarized.csv'
+csv_path = sys.argv[1]
 df = pd.read_csv(csv_path, index_col=0)
 
 a = np.array(df[df['software'] == 'woodynano']['read_length'])
