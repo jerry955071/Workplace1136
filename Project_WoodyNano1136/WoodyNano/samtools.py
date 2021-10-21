@@ -100,7 +100,7 @@ class SAM:
             
             line = line.strip().split(sep='\t')
             # the following if loop is for debugging
-            if len(line) != 11:
+            if len(line) < 10:
                 print(line, file=sys.stderr)
                 continue
             
