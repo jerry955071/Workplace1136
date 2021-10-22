@@ -97,7 +97,7 @@ with open(path_align_summary, "a") as fout:
         "ref_start_pychopper", "ref_end_pychopper", "numbers_of_exon_pychopper"
         )
     fout.write(outline)
-
+    n_line = 0
     for name in same_loci:
         outline = f"{name}\t"
         for software, dictionary in zip(['woodynano','pychopper'],[dict_woodynano, dict_pychopper]):        
@@ -117,6 +117,11 @@ with open(path_align_summary, "a") as fout:
         outline = outline[:-1]
 
         fout.write(outline)
+        n_line += 1
+        
+        if n_line == 1000:
+            fout.flush()
+            n_line = 0
                 
         
     
