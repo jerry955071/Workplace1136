@@ -60,43 +60,80 @@ for name in list(both_mapped):
 same_loci = both_mapped
 print(f'Same loci:\t{same_loci.__len__()}')
 
-#%%
-stats = {
-    'readname':[],
-    'read_length_woodynano':[],
-    'read_length_pychopper':[],
-    'mapped_read_length_woodynano':[],
-    'mapped_read_length_pychopper':[],
-    'matching_nucleotides_woodynano':[],
-    'matching_nucleotides_pychopper':[],
-    'softclipped_nucleotides_woodynano':[],
-    'softclipped_nucleotides_pychopper':[],
-    'clipping_left_woodynano':[],
-    'clipping_left_pychopper':[],
-    'clipping_right_woodynano':[],
-    'clipping_right_pychopper':[],
-    'ref_start_woodynano':[],
-    'ref_start_pychopper':[],
-    'ref_end_woodynano':[],
-    'ref_end_pychopper':[],
-    'numbers_of_exon_woodynano':[],
-    'numbers_of_exon_pychopper':[]
-}
+# stats = {
+#     'readname':[],
+#     'read_length_woodynano':[],
+#     'read_length_pychopper':[],
+#     'mapped_read_length_woodynano':[],
+#     'mapped_read_length_pychopper':[],
+#     'matching_nucleotides_woodynano':[],
+#     'matching_nucleotides_pychopper':[],
+#     'softclipped_nucleotides_woodynano':[],
+#     'softclipped_nucleotides_pychopper':[],
+#     'clipping_left_woodynano':[],
+#     'clipping_left_pychopper':[],
+#     'clipping_right_woodynano':[],
+#     'clipping_right_pychopper':[],
+#     'ref_start_woodynano':[],
+#     'ref_start_pychopper':[],
+#     'ref_end_woodynano':[],
+#     'ref_end_pychopper':[],
+#     'numbers_of_exon_woodynano':[],
+#     'numbers_of_exon_pychopper':[]
+# }
 
-for name in same_loci:
-    stats['readname'].append(name)
-    for software, dictionary in zip(['woodynano','pychopper'],[dict_woodynano, dict_pychopper]):
-        num_extron = dictionary[name].cigar_summary['extron'].__len__()
-        num_exon = (num_extron - 1) / 2 + 1
-        stats[f'read_length_{software}'].append(dictionary[name].read_length)
-        stats[f'mapped_read_length_{software}'].append(dictionary[name].mapped_read_length)
-        stats[f'matching_nucleotides_{software}'].append(dictionary[name].matching_nucleotides)
-        stats[f'softclipped_nucleotides_{software}'].append(sum(dictionary[name].clipping))
-        stats[f'clipping_left_{software}'].append(dictionary[name].clipping[0])
-        stats[f'clipping_right_{software}'].append(dictionary[name].clipping[1])
-        stats[f'ref_start_{software}'].append(dictionary[name].reference_span[0])
-        stats[f'ref_end_{software}'].append(dictionary[name].reference_span[1])
-        stats[f'numbers_of_exon_{software}'].append(int(num_exon))
 
-df = pd.DataFrame(stats)
-df.to_csv(path_align_summary, index=False)
+open(path_align_summary, "w")
+with open(path_align_summary, "a") as fout:
+    outline = "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s" % (
+        "readname", 
+        "read_length_woodynano", "mapped_read_length_woodynano",
+        "matching_nucleotides_woodynano", "softclipped_nucleotides_woodynano",
+        "clipping_left_woodynano", "clipping_right_woodynano",
+        "ref_start_woodynano", "ref_end_woodynano", "numbers_of_exon_woodynano",
+        "read_length_pychopper", "mapped_read_length_pychopper",
+        "matching_nucleotides_pychopper", "softclipped_nucleotides_pychopper",
+        "clipping_left_pychopper", "clipping_right_pychopper",
+        "ref_start_pychopper", "ref_end_pychopper", "numbers_of_exon_pychopper"
+        )
+    fout.write(outline)
+
+    for name in same_loci:
+        outline = f"{name}\t"
+        for software, dictionary in zip(['woodynano','pychopper'],[dict_woodynano, dict_pychopper]):        
+            num_extron = dictionary[name].cigar_summary['extron'].__len__()
+            num_exon = (num_extron - 1) / 2 + 1
+            outline += "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t" % (
+                dictionary[name].read_length,
+                dictionary[name].mapped_read_length,
+                dictionary[name].matching_nucleotides,
+                dictionary[name].clipping,
+                dictionary[name].clipping[0],
+                dictionary[name].clipping[1],
+                dictionary[name].reference_span[0],
+                dictionary[name].reference_span[1],
+                int(num_exon)
+            )
+        outline = outline[:-1]
+
+        fout.write(outline)
+                
+        
+    
+# for name in same_loci:
+#     stats['readname'].append(name)
+#     for software, dictionary in zip(['woodynano','pychopper'],[dict_woodynano, dict_pychopper]):
+#         num_extron = dictionary[name].cigar_summary['extron'].__len__()
+#         num_exon = (num_extron - 1) / 2 + 1
+#         stats[f'read_length_{software}'].append(dictionary[name].read_length)
+#         stats[f'mapped_read_length_{software}'].append(dictionary[name].mapped_read_length)
+#         stats[f'matching_nucleotides_{software}'].append(dictionary[name].matching_nucleotides)
+#         stats[f'softclipped_nucleotides_{software}'].append(sum(dictionary[name].clipping))
+#         stats[f'clipping_left_{software}'].append(dictionary[name].clipping[0])
+#         stats[f'clipping_right_{software}'].append(dictionary[name].clipping[1])
+#         stats[f'ref_start_{software}'].append(dictionary[name].reference_span[0])
+#         stats[f'ref_end_{software}'].append(dictionary[name].reference_span[1])
+#         stats[f'numbers_of_exon_{software}'].append(int(num_exon))
+
+# df = pd.DataFrame(stats)
+# df.to_csv(path_align_summary, index=False)
