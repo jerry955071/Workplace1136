@@ -28,9 +28,13 @@ sam_pychopper = samtools.SAM.Import(
 dict_woodynano = {}
 dict_pychopper = {}
 
+# name_list_woodynano = list()
+# name_list_pychopper = list()
+
 for i in sam_woodynano.alignment:
     if not last_name(i) in dict_woodynano.keys():
         dict_woodynano[last_name(i)] = i
+       
 for i in sam_pychopper.alignment:
     if not last_name(i) in dict_pychopper.keys():
         dict_pychopper[last_name(i)] = i
@@ -85,7 +89,7 @@ print(f'Same loci:\t{same_loci.__len__()}')
 
 open(path_align_summary, "w")
 with open(path_align_summary, "a") as fout:
-    outline = "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s" % (
+    outline = "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s" % (
         "readname", 
         "read_length_woodynano", "mapped_read_length_woodynano",
         "matching_nucleotides_woodynano", "softclipped_nucleotides_woodynano",
@@ -99,11 +103,11 @@ with open(path_align_summary, "a") as fout:
     fout.write(outline)
     n_line = 0
     for name in same_loci:
-        outline = f"{name}\t"
+        outline = f"{name},"
         for software, dictionary in zip(['woodynano','pychopper'],[dict_woodynano, dict_pychopper]):        
             num_extron = dictionary[name].cigar_summary['extron'].__len__()
             num_exon = (num_extron - 1) / 2 + 1
-            outline += "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t" % (
+            outline += "%s,%s,%s,%s,%s,%s,%s,%s,%s," % (
                 dictionary[name].read_length,
                 dictionary[name].mapped_read_length,
                 dictionary[name].matching_nucleotides,
