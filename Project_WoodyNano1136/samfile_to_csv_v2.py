@@ -45,8 +45,11 @@ for i in sam_woodynano.alignment:
 for i in sam_pychopper.alignment:
     name_list_pychopper.append(last_name(i))
 
-# both_mapped = set(dict_woodynano.keys()) & set(dict_pychopper.keys())
-# print(f'Both mapped:\t{both_mapped.__len__()}')
+name_list_woodynano = set(name_list_woodynano)
+name_list_pychopper = set(name_list_pychopper)
+    
+both_mapped = name_list_woodynano.intersect(name_list_pychopper)
+print(f'Both mapped:\t{both_mapped.__len__()}')
 
 # for i in set(dict_woodynano.keys()) - both_mapped:
 #     dict_woodynano.pop(i)
