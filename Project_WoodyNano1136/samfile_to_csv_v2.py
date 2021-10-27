@@ -43,10 +43,13 @@ for i in sam_woodynano.alignment:
 for i in sam_pychopper.alignment:
     name_list_pychopper.append(last_name(i))
 
+sys.stderr.write("name lists created")
+
 name_list_woodynano = set(name_list_woodynano)
 name_list_pychopper = set(name_list_pychopper)
     
 both_mapped = name_list_woodynano.intersect(name_list_pychopper)
+sys.stderr.write("find intersect")
 print(f'Both mapped:\t{both_mapped.__len__()}')
 
 # for i in set(dict_woodynano.keys()) - both_mapped:
@@ -55,20 +58,25 @@ print(f'Both mapped:\t{both_mapped.__len__()}')
 # for i in set(dict_pychopper.keys()) - both_mapped:
 #     dict_pychopper.pop(i)
 
-
 dict_woodynano = {}
 dict_pychopper = {}
 
 for i in sam_woodynano.alignment:
     if last_name(i) in both_mapped:
-        dict_woodynano[last_name(i)] = i
-        dict_woodynano[last_name(i)].cal_all_stats(keep=True)
-        
+        if not last_name(i) in dict_woodynano.keys():
+            dict_woodynano[last_name(i)] = i
+            sam_woodynano.alignment.remove(i)
+            dict_woodynano[last_name(i)].cal_all_stats(keep=True)
+sys.stderr.write("woodynano dict created")
+
 for i in sam_pychopper.alignment:
     if last_name(i) in both_mapped:
-        dict_pychopper[last_name(i)] = i
-        dict_pychopper[last_name(i)].cal_all_stats(keep=True)
-
+        if not last_name(i) in dict_pychopper.keys():
+            dict_pychopper[last_name(i)] = i
+            sam_pychopper.aligment.remove(i)
+            dict_pychopper[last_name(i)].cal_all_stats(keep=True)
+sys.stderr.write("woodynano dict created")
+            
 # # calcualte stats for both mapped reads
 # for name in list(both_mapped):
 #     dict_woodynano[name].cal_all_stats(keep=True)
@@ -80,6 +88,7 @@ for name in list(both_mapped):
     ref_span_pychopper = dict_pychopper[name].reference_span
     if not min(ref_span_woodynano[-1],ref_span_pychopper[-1]) > max(ref_span_woodynano[0],ref_span_pychopper[0]):
         both_mapped.remove(name)
+print("line 89")
 
 same_loci = both_mapped
 print(f'Same loci:\t{same_loci.__len__()}')
