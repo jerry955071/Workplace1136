@@ -25,12 +25,6 @@ sam_pychopper = samtools.SAM.Import(
 )
 
 
-dict_woodynano = {}
-dict_pychopper = {}
-
-name_list_woodynano = list()
-name_list_pychopper = list()
-
 # for i in sam_woodynano.alignment:
 #     if not last_name(i) in dict_woodynano.keys():
 #         dict_woodynano[last_name(i)] = i
@@ -38,6 +32,10 @@ name_list_pychopper = list()
 # for i in sam_pychopper.alignment:
 #     if not last_name(i) in dict_pychopper.keys():
 #         dict_pychopper[last_name(i)] = i
+
+
+name_list_woodynano = list()
+name_list_pychopper = list()
 
 for i in sam_woodynano.alignment:
     name_list_woodynano.append(last_name(i))
@@ -57,12 +55,26 @@ print(f'Both mapped:\t{both_mapped.__len__()}')
 # for i in set(dict_pychopper.keys()) - both_mapped:
 #     dict_pychopper.pop(i)
 
-# # Check if on the same loci
+
+dict_woodynano = {}
+dict_pychopper = {}
+
+for i in sam_woodynano.alignment:
+    if last_name(i) in both_mapped:
+        dict_woodynano[last_name(i)] = i
+        dict_woodynano[last_name(i)].cal_all_stats(keep=True)
+        
+for i in sam_pychopper.alignment:
+    if last_name(i) in both_mapped:
+        dict_pychopper[last_name(i)] = i
+        dict_pychopper[last_name(i)].cal_all_stats(keep=True)
+
+# # calcualte stats for both mapped reads
 # for name in list(both_mapped):
 #     dict_woodynano[name].cal_all_stats(keep=True)
 #     dict_pychopper[name].cal_all_stats(keep=True)
 
-
+# # Check if on the same loci
 # for name in list(both_mapped):
 #     ref_span_woodynano = dict_woodynano[name].reference_span
 #     ref_span_pychopper = dict_pychopper[name].reference_span
