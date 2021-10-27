@@ -74,15 +74,15 @@ for i in sam_pychopper.alignment:
 #     dict_woodynano[name].cal_all_stats(keep=True)
 #     dict_pychopper[name].cal_all_stats(keep=True)
 
-# # Check if on the same loci
-# for name in list(both_mapped):
-#     ref_span_woodynano = dict_woodynano[name].reference_span
-#     ref_span_pychopper = dict_pychopper[name].reference_span
-#     if not min(ref_span_woodynano[-1],ref_span_pychopper[-1]) > max(ref_span_woodynano[0],ref_span_pychopper[0]):
-#         both_mapped.remove(name)
+# Check if on the same loci
+for name in list(both_mapped):
+    ref_span_woodynano = dict_woodynano[name].reference_span
+    ref_span_pychopper = dict_pychopper[name].reference_span
+    if not min(ref_span_woodynano[-1],ref_span_pychopper[-1]) > max(ref_span_woodynano[0],ref_span_pychopper[0]):
+        both_mapped.remove(name)
 
-# same_loci = both_mapped
-# print(f'Same loci:\t{same_loci.__len__()}')
+same_loci = both_mapped
+print(f'Same loci:\t{same_loci.__len__()}')
 
 # # stats = {
 # #     'readname':[],
