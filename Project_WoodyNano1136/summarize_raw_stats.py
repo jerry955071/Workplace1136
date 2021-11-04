@@ -25,7 +25,7 @@ import sys
 
 # df.to_csv(f'{csv_path}/Summarized.csv', index=False)
 
-args = sys.argv
+args = sys.argv[1:]
 fout = args.pop(0)
 length = len(args)
 filenames = args[0:length/2]
